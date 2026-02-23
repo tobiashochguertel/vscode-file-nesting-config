@@ -1,0 +1,53 @@
+version: "3"
+
+vars:
+  REPO: "tobiashochguertel/vscode-file-nesting-config"
+  WORKFLOW: "sync.yml"
+
+tasks:
+  default:
+    desc: "List all available tasks"
+    cmds:
+      - task --list
+
+  merge:
+    desc: "Fetch upstream and merge personal patterns → README.md"
+    cmds:
+      - uv run merge_nesting.py --patterns personal-patterns.yaml --output README.md
+
+  dry-run:
+    desc: "Preview merged README without writing to disk"
+    cmds:
+      - uv run merge_nesting.py --dry-run
+
+  lint:
+    desc: "Lint merge_nesting.py with ruff"
+    cmds:
+      - uvx ruff check merge_nesting.py
+
+  format:
+    desc: "Format merge_nesting.py with ruff"
+    cmds:
+      - uvx ruff format merge_nesting.py
+
+  trigger:
+    desc: "Manually trigger the GitHub Actions sync workflow"
+    cmds:
+      - gh workflow run {{.WORKFLOW}} --repo {{.REPO}}
+      - echo "Triggered. Run 'task watch' to follow progress."
+
+  watch:
+    desc: "Watch the latest workflow run"
+    cmds:
+      - |
+        RUN_ID=$(gh run list --repo {{.REPO}} --workflow {{.WORKFLOW}} \
+          --limit 1 --json databaseId --jq '.[0].databaseId')
+        gh run watch "$RUN_ID" --repo {{.REPO}}
+
+  logs:
+    desc: "Show logs of the latest workflow run"
+    cmds:
+      - |
+        RUN_ID=$(gh run list --repo {{.REPO}} --workflow {{.WORKFLOW}} \
+          --limit 1 --json databaseId --jq '.[0].databaseId')
+        gh run view "$RUN_ID" --repo {{.REPO}} --log

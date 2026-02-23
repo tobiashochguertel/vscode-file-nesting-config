@@ -1,0 +1,24 @@
+# Personal file nesting patterns for VS Code
+# These are merged ON TOP of the upstream antfu/vscode-file-nesting-config patterns.
+#
+# Format:
+#   Each entry has a `key` (the parent file glob) and `patterns` (list of child globs).
+#   Entries here take PRECEDENCE over upstream entries with the same key.
+#
+# Reference: https://code.visualstudio.com/docs/getstarted/userinterface#_explorer
+# Glob syntax: https://code.visualstudio.com/api/references/vscode-api#GlobPattern
+
+patterns:
+  # mise version manager config files
+  - key: "mise.toml"
+    patterns:
+      - ".mise.toml"
+      - "*.mise.toml"
+      - "mise.local.toml"
+
+  # Taskfile variants
+  - key: "Taskfile.yml"
+    patterns:
+      - "Taskfile.*.yml"
+      - "taskfile.yml"
+      - "taskfile.*.yml"

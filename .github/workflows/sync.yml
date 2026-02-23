@@ -1,0 +1,74 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    # Every 11 hours
+    - cron: "0 */11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Merge personal patterns → README.md
+        run: uv run merge_nesting.py --patterns personal-patterns.yaml --output README.md
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet README.md; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "README.md is already up-to-date."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "README.md has new upstream changes."
+          fi
+
+      - name: Commit and push updated README.md
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "chore: sync upstream nesting patterns [skip ci]"
+          git push
+
+      - name: Open conflict-notification issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `Sync failed — manual intervention needed (${new Date().toISOString().slice(0,10)})`;
+            const body = [
+              "## Sync failure",
+              "",
+              "The scheduled sync workflow failed. This usually means the upstream README format changed.",
+              "",
+              "### Steps to fix",
+              "1. Run `task merge` locally to see the error",
+              "2. Fix `merge_nesting.py` or `personal-patterns.yaml` as needed",
+              "3. Commit the fix — the next scheduled run will pick it up",
+              "",
+              `**Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+            ].join("\n");
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title,
+              body,
+              labels: ["sync-failure"],
+            });

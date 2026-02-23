@@ -2,9 +2,14 @@ name: Sync with Upstream
 
 on:
   schedule:
-    # Every 11 hours
+    # Every 11 hours — picks up upstream changes
     - cron: "0 */11 * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - personal-patterns.yaml
+      - merge_nesting.py
 
 permissions:
   contents: write

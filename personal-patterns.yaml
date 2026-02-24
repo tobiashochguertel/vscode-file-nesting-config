@@ -22,3 +22,10 @@ patterns:
       - "Taskfile.*.yml"
       - "taskfile.yml"
       - "taskfile.*.yml"
+
+  # Lefthook
+  - key: "lefthook.yml"
+    patterns:
+      - ".lefthookrc"
+      - "lefthook-*.yml"
+      - "lefthook.*.yml"

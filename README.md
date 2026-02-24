@@ -140,7 +140,8 @@ Open your VS Code, bring up your `settings.json`, copy-n-paste the snippet below
     "*.wat": "$(capture).wasm",
     "*.xaml": "$(capture).xaml.cs",
     "mise.toml": ".mise.toml, *.mise.toml, mise.local.toml",
-    "Taskfile.yml": "Taskfile.*.yml, taskfile.yml, taskfile.*.yml"
+    "Taskfile.yml": "Taskfile.*.yml, taskfile.yml, taskfile.*.yml",
+    "lefthook.yml": ".lefthookrc, lefthook-*.yml, lefthook.*.yml"
   },
 ```
 

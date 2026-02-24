@@ -59,7 +59,7 @@ jobs:
           git push
 
       - name: Purge jsDelivr CDN cache
-        if: steps.diff.outputs.changed == 'true'
+        if: always()
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"

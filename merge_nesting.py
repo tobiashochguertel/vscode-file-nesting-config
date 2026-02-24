@@ -60,6 +60,30 @@ CUSTOM_HEADER = """\
 > See [docs/how-it-works.md](docs/how-it-works.md) for details.\
 """
 
+# Section injected before "## Contributing" on every render so it survives upstream syncs.
+EXTENSION_SETUP_SECTION = """\
+
+---
+
+## VS Code Extension Setup
+
+Install [antfu.file-nesting-updater](https://marketplace.visualstudio.com/items?itemName=antfu.file-nesting-updater)
+from the VS Code Marketplace, then add to your `settings.json`:
+
+```jsonc
+{
+  // Point the extension at this fork instead of the upstream repo
+  "fileNestingUpdater.upstreamRepo": "tobiashochguertel/vscode-file-nesting-config",
+  "fileNestingUpdater.upstreamBranch": "main"
+}
+```
+
+The extension checks for updates every 12 hours and rewrites `explorer.fileNesting.patterns`
+in your user `settings.json` from the `README.md` of whichever repo you point it at.
+
+---
+"""
+
 
 # ---------------------------------------------------------------------------
 # Pydantic models
@@ -199,7 +223,10 @@ def render_readme(upstream_readme: str, merged_block: str) -> str:
         (i + 1 for i, l in enumerate(lines) if "<h1>" in l), 0
     )
     lines.insert(insert_at, f"\n{REPO_NOTE}\n\n")
-    return "".join(lines)
+    result = "".join(lines)
+    # Inject the extension setup section before "## Contributing" (survives upstream syncs)
+    result = result.replace("\n## Contributing\n", f"{EXTENSION_SETUP_SECTION}\n## Contributing\n", 1)
+    return result
 
 
 # ---------------------------------------------------------------------------

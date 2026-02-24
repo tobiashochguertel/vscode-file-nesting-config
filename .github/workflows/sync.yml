@@ -32,6 +32,9 @@ jobs:
       - name: Merge personal patterns → README.md
         run: uv run merge_nesting.py --patterns personal-patterns.yaml --output README.md
 
+      - name: Validate README.md JSONC (extension-compatible)
+        run: uv run validate_readme.py README.md
+
       - name: Check for changes
         id: diff
         run: |

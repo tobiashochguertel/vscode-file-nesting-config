@@ -141,7 +141,7 @@ Open your VS Code, bring up your `settings.json`, copy-n-paste the snippet below
     "*.xaml": "$(capture).xaml.cs",
     "mise.toml": ".mise.toml, *.mise.toml, mise.local.toml",
     "Taskfile.yml": "Taskfile.*.yml, taskfile.yml, taskfile.*.yml"
-  }
+  },
 ```
 
 ## Contributing

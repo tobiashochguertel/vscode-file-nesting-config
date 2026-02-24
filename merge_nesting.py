@@ -178,7 +178,7 @@ def render_jsonc_block(
     lines.append(f'  "explorer.fileNesting.expand": {json5.dumps(expand)},')
     lines.append('  "explorer.fileNesting.patterns": {')
     lines.extend(pattern_lines)
-    lines.append("  }")
+    lines.append("  },")  # trailing comma required: extension does .slice(0,-1) expecting ","
     return "\n".join(lines)
 
 

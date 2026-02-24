@@ -11,9 +11,15 @@ tasks:
       - task --list
 
   validate:
-    desc: "Validate README.md JSONC is parseable by the VS Code extension"
+    desc: "Validate README.md JSONC is parseable by the VS Code extension (+ upstream comparison)"
     cmds:
-      - uv run validate_readme.py README.md
+      - uv run validate_readme.py --self-test
+      - uv run validate_readme.py README.md --upstream
+
+  validate-self-test:
+    desc: "Run validator self-test to confirm error detection works"
+    cmds:
+      - uv run validate_readme.py --self-test
 
   merge:
     desc: "Fetch upstream and merge personal patterns → README.md"

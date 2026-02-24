@@ -32,8 +32,11 @@ jobs:
       - name: Merge personal patterns → README.md
         run: uv run merge_nesting.py --patterns personal-patterns.yaml --output README.md
 
+      - name: Self-test validator logic
+        run: uv run validate_readme.py --self-test
+
       - name: Validate README.md JSONC (extension-compatible)
-        run: uv run validate_readme.py README.md
+        run: uv run validate_readme.py README.md --upstream
 
       - name: Check for changes
         id: diff
@@ -54,6 +57,15 @@ jobs:
           git add README.md
           git commit -m "chore: sync upstream nesting patterns [skip ci]"
           git push
+
+      - name: Purge jsDelivr CDN cache
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          URL="https://purge.jsdelivr.net/gh/${OWNER}/${REPO}@main/README.md"
+          echo "Purging jsDelivr cache: $URL"
+          curl -s "$URL" | python3 -c "import sys,json; d=json.load(sys.stdin); print('CDN purge:', d.get('status','unknown'))" || echo "CDN purge: request sent"
 
       - name: Open conflict-notification issue on failure
         if: failure()
